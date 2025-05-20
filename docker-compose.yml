@@ -1,0 +1,143 @@
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - lab_network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "My!P@ssw0rd1"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - lab2-sqldata:/var/opt/mssql
+    networks:
+      - lab_network
+
+  apigateway:
+    build:
+      context: .
+      dockerfile: ./APIGateway/Dockerfile
+    container_name: apigateway
+    ports:
+      - "8080:8080"
+    environment:
+      - FLASK_RUN_PORT=8080
+    depends_on:
+      - servera
+      - serverb
+      - rabbitmq
+      - grpcserver
+    networks:
+      - lab_network
+
+  servera:
+    build:
+      context: ./ServerA
+    container_name: servera
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_RUN_PORT=5000
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - lab_network
+
+  serverb:
+    build:
+      context: ./ServerB
+    container_name: serverb
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_RUN_PORT=5001
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    networks:
+      - lab_network
+
+  grpcserver:
+    build:
+      context: ./Grpc
+    container_name: grpcserver
+    ports:
+      - "50052:50052"
+    environment:
+      - FLASK_RUN_PORT=50052
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    volumes:
+      - ./Grpc:/app
+    networks:
+      - lab_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+    networks:
+      - lab_network
+
+  seq:
+    image: datalust/seq
+    container_name: seq
+    ports:
+      - "5341:80"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_API_KEY=my_api_key
+
+    volumes:
+      - ./seq.json:/etc/seq/seq.json:ro
+    restart: unless-stopped
+    networks:
+      - lab_network
+
+  client:
+    build:
+      context: ./Client
+    container_name: client
+    depends_on:
+      - apigateway
+      - grpcserver
+    networks:
+      - lab_network
+    environment:
+      - API_GATEWAY=http://apigateway:8080
+    volumes:
+      - ./Client:/app
+    ports:
+      - "5005:5005"
+
+volumes:
+  lab2-sqldata:
+    external: false
+
+networks:
+  lab_network:
+    driver: bridge

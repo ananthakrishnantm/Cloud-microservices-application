@@ -1,0 +1,40 @@
+# serverb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serverb
+  namespace: lab-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: serverb
+  template:
+    metadata:
+      labels:
+        app: serverb
+    spec:
+      containers:
+        - name: serverb
+          image: cloudlab3.azurecr.io/server-serverb:latest
+
+          # Replace with the actual image for ServerB
+          ports:
+            - containerPort: 5001
+          env:
+            - name: FLASK_RUN_PORT
+              value: "5001"
+      restartPolicy: Always
+---
+# serverb-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: serverb
+  namespace: lab-namespace
+spec:
+  ports:
+    - port: 5001
+      targetPort: 5001
+  selector:
+    app: serverb

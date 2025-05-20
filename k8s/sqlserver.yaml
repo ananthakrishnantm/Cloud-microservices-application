@@ -1,0 +1,62 @@
+# sqlserver-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sqlserver-pvc
+  namespace: lab-namespace
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+# sqlserver-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqlserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqlserver
+  template:
+    metadata:
+      labels:
+        app: sqlserver
+    spec:
+      containers:
+        - name: sqlserver
+          image: cloudlab3.azurecr.io/mssql/server:latest
+
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              value: "My!P@ssw0rd1"
+            - name: MSSQL_PID
+              value: "Developer"
+          volumeMounts:
+            - mountPath: /var/opt/mssql
+              name: sqlserver-storage
+      volumes:
+        - name: sqlserver-storage
+          persistentVolumeClaim:
+            claimName: sqlserver-pvc
+---
+# sqlserver-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqlserver
+  namespace: lab-namespace
+spec:
+  ports:
+    - port: 1433
+      targetPort: 1433
+  selector:
+    app: sqlserver

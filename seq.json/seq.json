@@ -1,0 +1,13 @@
+{
+  "storage": {
+    "path": "/data",
+    "retentionPolicy": {
+      "maximumSize": "5GB",
+      "minimumFreeSpace": "1GB"
+    }
+  },
+  "api": {
+    "key": "my_api_key",
+    "AcceptEula": true
+  }
+}

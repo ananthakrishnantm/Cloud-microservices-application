@@ -1,0 +1,39 @@
+# grpcserver-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpcserver
+  namespace: lab-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpcserver
+  template:
+    metadata:
+      labels:
+        app: grpcserver
+    spec:
+      containers:
+        - name: grpcserver
+          image: cloudlab3.azurecr.io/server-grpcserver:latest
+
+          ports:
+            - containerPort: 50052
+          env:
+            - name: FLASK_RUN_PORT
+              value: "50052"
+      restartPolicy: Always
+---
+# grpcserver-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpcserver
+  namespace: lab-namespace
+spec:
+  ports:
+    - port: 50052
+      targetPort: 50052
+  selector:
+    app: grpcserver

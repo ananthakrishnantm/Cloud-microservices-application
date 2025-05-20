@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 15s # Scrape targets every 15 seconds by default.
+
+scrape_configs:
+  - job_name: "flask_app"
+    static_configs:
+      - targets: ["apigateway:8080", "servera:5000", "serverb:5001"] # Scrape metrics from API Gateway

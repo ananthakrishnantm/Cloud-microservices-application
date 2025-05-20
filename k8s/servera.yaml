@@ -1,0 +1,40 @@
+# servera-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servera
+  namespace: lab-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servera
+  template:
+    metadata:
+      labels:
+        app: servera
+    spec:
+      containers:
+        - name: servera
+          image: cloudlab3.azurecr.io/server-servera:latest
+
+          # Replace with the actual image for ServerA
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_RUN_PORT
+              value: "5000"
+      restartPolicy: Always
+---
+# servera-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: servera
+  namespace: lab-namespace
+spec:
+  ports:
+    - port: 5000
+      targetPort: 5000
+  selector:
+    app: servera

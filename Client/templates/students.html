@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Students</title>
+  </head>
+  <body>
+    <h1>Students</h1>
+    <form method="POST">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+      <label for="course">Course:</label>
+      <input type="text" id="course" name="course" required />
+      <button type="submit">Add Student</button>
+    </form>
+    <h2>Student List</h2>
+    <ul id="student-list">
+      {% for student in students %}
+      <li>
+        {{ student['name'] }} ({{ student['email'] }}) - {{ student['course'] }}
+      </li>
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+  </body>
+</html>

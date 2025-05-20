@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics</title>
+  </head>
+  <body>
+    <h1>Analytics Dashboard</h1>
+    <form method="POST">
+      <label for="type">Select Analytics Type:</label>
+      <select name="type" id="type" required>
+        <option value="courses">Course Statistics</option>
+        <option value="students">Student Data</option>
+      </select>
+      <button type="submit">Fetch Analytics</button>
+    </form>
+
+    {% if data %}
+    <h2>Results for {{ request_type }}</h2>
+    {% if request_type == "courses" %}
+    <ul>
+      {% for course in data.courses %}
+      <li>
+        {{ course.course_name }} ({{ course.course_code }}): {{
+        course.student_count }} students enrolled
+      </li>
+      {% endfor %}
+    </ul>
+    {% elif request_type == "students" %}
+    <ul>
+      {% for student in data.students %}
+      <li>
+        {{ student.name }} ({{ student.email }}): Enrolled in {{ student.course
+        }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% else %}
+    <p>No data available. Select an analytics type and submit the form.</p>
+    {% endif %}
+
+    <a href="{{ url_for('home') }}">Back to Home</a>
+  </body>
+</html>

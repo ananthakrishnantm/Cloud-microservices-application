@@ -1,0 +1,6 @@
+Flask
+requests
+pika
+pymssql
+prometheus_client
+seqlog

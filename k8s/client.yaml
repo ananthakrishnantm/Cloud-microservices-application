@@ -1,0 +1,41 @@
+# client-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+  namespace: lab-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          image: cloudlab3.azurecr.io/server-client:latest
+
+          ports:
+            - containerPort: 5005
+          env:
+            - name: API_GATEWAY
+              value: "http://apigateway:8080"
+      volumes: []
+      restartPolicy: Always
+---
+# client-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: client
+  namespace: lab-namespace
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5005
+      targetPort: 5005
+  selector:
+    app: client

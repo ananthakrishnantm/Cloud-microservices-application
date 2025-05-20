@@ -1,0 +1,8 @@
+Flask
+requests
+grpcio
+grpcio-tools
+protobuf
+pika
+pymssql
+features

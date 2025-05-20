@@ -1,0 +1,41 @@
+# apigateway-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigateway
+  namespace: lab-namespace
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apigateway
+  template:
+    metadata:
+      labels:
+        app: apigateway
+    spec:
+      containers:
+        - name: apigateway
+          image: cloudlab3.azurecr.io/server-apigateway:latest
+
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FLASK_RUN_PORT
+              value: "8080"
+      restartPolicy: Always
+---
+# apigateway-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigateway
+  namespace: lab-namespace
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: apigateway
+

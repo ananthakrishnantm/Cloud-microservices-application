@@ -1,0 +1,48 @@
+# seq-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq
+  namespace: lab-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+        - name: seq
+          image: cloudlab3.azurecr.io/datalust/seq:latest
+
+          ports:
+            - containerPort: 80
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SEQ_API_KEY
+              value: "my_api_key"
+          volumeMounts:
+            - name: seq-config
+              mountPath: /etc/seq
+      volumes:
+        - name: seq-config
+          configMap:
+            name: seq-config
+---
+# seq-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq
+  namespace: lab-namespace
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5341
+      targetPort: 80
+  selector:
+    app: seq

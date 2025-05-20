@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package studentcourse;
+
+service StudentCourseService {
+  // Aggregated data of students and their enrolled courses
+  rpc GetStudentCourseData (Empty) returns (StudentCourseResponse);
+
+  // Statistics on course enrollment
+  rpc GetCourseStatistics (Empty) returns (CourseStatisticsResponse);
+
+  // Real-time data push using RabbitMQ
+  rpc StreamRealTimeUpdates (Empty) returns (stream StudentUpdate);
+}
+
+// Request and response messages
+message Empty {}
+
+message Student {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  string course = 4;
+}
+
+message Course {
+  int32 id = 1;
+  string course_name = 2;
+  string course_code = 3;
+  int32 student_count = 4;
+}
+
+message StudentCourseResponse {
+  repeated Student students = 1;
+}
+
+message CourseStatisticsResponse {
+  repeated Course courses = 1;
+}
+
+message StudentUpdate {
+  int32 student_id = 1;
+  string name = 2;
+  string email = 3;
+  string course = 4;
+}
