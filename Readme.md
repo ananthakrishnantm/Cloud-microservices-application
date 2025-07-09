@@ -19,13 +19,13 @@ All services are containerized and run in a bridge network for local development
 
 ## 🚀 Features
 
-- ✅ MVC structure with separate Client, API Gateway, and Servers
-- ✅ Asynchronous event-driven communication using RabbitMQ
-- ✅ gRPC integration for combined analytics
-- ✅ Centralized logging with Seq
-- ✅ Health monitoring using Prometheus
-- ✅ Docker Compose for local development
-- ✅ Kubernetes manifests for production deployment
+- MVC structure with separate Client, API Gateway, and Servers
+- Asynchronous event-driven communication using RabbitMQ
+- gRPC integration for combined analytics
+- Centralized logging with Seq
+- Health monitoring using Prometheus
+- Docker Compose for local development
+- Kubernetes manifests for production deployment
 
 ---
 
@@ -75,22 +75,3 @@ kubectl apply -f .
 kubectl get pods -n lab-namespace
 ```
 
----
-
-## 🗃️ Container Registry
-
-All Docker images were pushed to a private container registry and deployed using Kubernetes. The cluster pulls images from this registry.
-
----
-
-## 📈 Result
-
-A fully containerized and orchestrated MVC application capable of handling REST, gRPC, and asynchronous messaging, deployed in a scalable Kubernetes environment.
-
----
-
-## 📄 Author
-
-**Ananthakrishnan Thuruthel Murali**  
-Project under supervision of **Assoc. Prof. Naujokaitis Darius**  
-*Kaunas University of Technology*
